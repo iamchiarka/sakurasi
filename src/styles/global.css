@@ -1,3 +1,32 @@
 @import "tailwindcss";
 
 @custom-variant dark (&:where(.dark, .dark *));
+
+@theme {
+	--font-serif: "Shippori Mincho", ui-serif, serif;
+}
+
+@font-face {
+	font-family: "Shippori Mincho";
+	font-weight: 400;
+	font-display: swap;
+	src: url("/fonts/shippori-mincho-latin-400.woff2") format("woff2");
+	unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+2000-206F, U+20AC, U+2122, U+2212, U+FEFF, U+FFFD;
+}
+
+@font-face {
+	font-family: "Shippori Mincho";
+	font-weight: 700;
+	font-display: swap;
+	src: url("/fonts/shippori-mincho-latin-700.woff2") format("woff2");
+	unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+2000-206F, U+20AC, U+2122, U+2212, U+FEFF, U+FFFD;
+}
+
+/* Subset containing only 桜; add glyphs by re-downloading with Google Fonts' text= parameter. */
+@font-face {
+	font-family: "Shippori Mincho";
+	font-weight: 400;
+	font-display: swap;
+	src: url("/fonts/shippori-mincho-sakura.woff2") format("woff2");
+	unicode-range: U+685C;
+}
