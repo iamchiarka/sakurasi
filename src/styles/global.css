@@ -8,7 +8,7 @@
 	--sky-low: #f5c8b4;
 	--bg-deep: #f2c4b5;
 	--ink: #4c0519;
-	--ink-soft: #44403c;
+	--ink-soft: #3a3532;
 	--muted: #3d3834;
 	--accent: #9f1239;
 	--accent-soft: #881337;
@@ -23,7 +23,6 @@
 	--branch-lit: rgb(255 236 220 / 0.45);
 	--blossom: #f4a7bd;
 	--distant: rgb(110 70 120 / 0.2);
-	--watermark: rgb(110 40 90 / 0.06);
 	--grain-opacity: 0.05;
 }
 
@@ -31,7 +30,7 @@
 	--sky-top: #09070a;
 	--bg: #0c0a0d;
 	--sky-low: #140b11;
-	--bg-deep: #1a0d14;
+	--bg-deep: #22131d;
 	--ink: #fff1f2;
 	--ink-soft: #d6d3d1;
 	--muted: #a8a29e;
@@ -45,10 +44,9 @@
 	--petal-lit: #ffe4e6;
 	--petal: #fda4af;
 	--branch: #050304;
-	--branch-lit: rgb(232 196 204 / 0.22);
+	--branch-lit: rgb(232 196 204 / 0.4);
 	--blossom: #f3c6d3;
-	--distant: rgb(58 32 46 / 0.55);
-	--watermark: rgb(251 113 133 / 0.05);
+	--distant: rgb(48 28 41 / 0.95);
 	--grain-opacity: 0.06;
 }
 
@@ -60,13 +58,24 @@
 	--color-accent: var(--accent);
 	--color-accent-soft: var(--accent-soft);
 	--color-line: var(--line);
-	--color-watermark: var(--watermark);
 }
 
 @utility verse {
 	font-size: 1.125rem;
 	line-height: 2;
 	color: var(--ink-soft);
+}
+
+/* Registered so the sky gradient can fade with the theme instead of jumping. */
+@property --sky-top { syntax: '<color>'; inherits: true; initial-value: transparent; }
+@property --bg { syntax: '<color>'; inherits: true; initial-value: transparent; }
+@property --sky-low { syntax: '<color>'; inherits: true; initial-value: transparent; }
+@property --bg-deep { syntax: '<color>'; inherits: true; initial-value: transparent; }
+
+@media (max-height: 700px) {
+	.verse {
+		line-height: 1.8;
+	}
 }
 
 @layer base {
@@ -92,10 +101,16 @@
 	}
 
 	@media (prefers-reduced-motion: no-preference) {
-		body {
+		html {
 			transition:
-				background-color 300ms ease-out,
-				color 300ms ease-out;
+				--sky-top 300ms ease-out,
+				--bg 300ms ease-out,
+				--sky-low 300ms ease-out,
+				--bg-deep 300ms ease-out;
+		}
+
+		body {
+			transition: color 300ms ease-out;
 		}
 	}
 }

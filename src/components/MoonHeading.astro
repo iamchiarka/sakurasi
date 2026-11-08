@@ -15,6 +15,10 @@ const blossoms: [number, number, number][] = [
 	[30, 172, 1],
 	[326, 30, 0.75],
 ];
+const outerBlossoms: [number, number, number][] = [
+	[702, -62, 0.9],
+	[1196, -14, 0.8],
+];
 const buds: [number, number][] = [
 	[226, 30],
 	[214, 118],
@@ -35,9 +39,22 @@ const buds: [number, number][] = [
 			<clipPath id="moon-disc">
 				<circle cx="200" cy="94" r="100" />
 			</clipPath>
+			<linearGradient id="limb-fade-gradient" gradientUnits="userSpaceOnUse" x1="900" y1="0" x2="2600" y2="0">
+				<stop offset="0" stop-color="white" />
+				<stop offset="1" stop-color="black" />
+			</linearGradient>
+			<mask id="limb-fade" maskUnits="userSpaceOnUse" x="380" y="-300" width="3700" height="400">
+				<rect x="380" y="-300" width="3700" height="400" fill="url(#limb-fade-gradient)" />
+			</mask>
 		</defs>
+		<g fill="none" stroke="var(--branch)" stroke-linecap="round" mask="url(#limb-fade)">
+			<path d="M4000 -150C3000 -110 2200 -100 1700 -70" stroke-width="8.5" />
+			<path d="M1700 -70C1400 -40 1100 -50 900 -30" stroke-width="8" />
+			<path d="M900 -30C700 -28 520 -6 400 18" stroke-width="7.5" />
+			<path d="M650 -14C662 -38 680 -52 702 -62" stroke-width="2.2" />
+			<path d="M1150 -46C1160 -28 1176 -18 1196 -14" stroke-width="2" />
+		</g>
 		<g fill="none" stroke="var(--branch)" stroke-linecap="round">
-			<path d="M4000 -160C1800 -90 700 -42 400 18" stroke-width="7" />
 			<path d="M400 18C340 30 300 52 258 70" stroke-width="7" />
 			<path d="M258 70C215 88 170 96 120 120" stroke-width="4.5" />
 			<path d="M120 120C90 135 62 150 30 172" stroke-width="2.5" />
@@ -49,6 +66,14 @@ const buds: [number, number][] = [
 		</g>
 		<g fill="var(--blossom)">
 			{blossoms.map(([x, y, s]) => <use href="#blossom" transform={`translate(${x} ${y}) scale(${s * 1.4})`} />)}
+		</g>
+		<g mask="url(#limb-fade)">
+			<g fill="var(--blossom)">
+				{outerBlossoms.map(([x, y, s]) => <use href="#blossom" transform={`translate(${x} ${y}) scale(${s * 1.4})`} />)}
+			</g>
+			<g fill="var(--branch)">
+				{outerBlossoms.map(([x, y, s]) => <circle cx={x} cy={y} r={1.6 * s} />)}
+			</g>
 		</g>
 		<g class="backlit" clip-path="url(#moon-disc)">
 			{blossoms.map(([x, y, s]) => <use href="#blossom" transform={`translate(${x} ${y}) scale(${s * 1.4})`} />)}
@@ -115,8 +140,11 @@ const buds: [number, number][] = [
 		pointer-events: none;
 	}
 
-	/* Only blossoms in front of the disc are backlit; the rest stay lit pink. */
+	/* In front of the disc: dark silhouette with a thin rim of moonlight. */
 	.backlit {
-		fill: color-mix(in srgb, var(--blossom) 45%, var(--branch));
+		fill: color-mix(in srgb, var(--branch) 80%, var(--blossom));
+		stroke: var(--moon-edge);
+		stroke-width: 0.8;
+		stroke-opacity: 0.7;
 	}
 </style>

@@ -3,16 +3,15 @@ import Layout from '../layouts/Layout.astro';
 import MoonHeading from '../components/MoonHeading.astro';
 ---
 
-<Layout title="SAKURASI · さくラシ">
-	<MoonHeading class="text-[clamp(2.25rem,min(11.5vw,13vh),6rem)]">
+<Layout title="SAKURASI · さくラシ" description="A small night garden by Raphael. さくラシ.">
+	<MoonHeading class="text-[clamp(2.25rem,min(11.5vw,12vh),6rem)]">
 		<h1 class="headline tracking-[0.06em] uppercase">Sakurasi</h1>
 		<p lang="ja" class="mt-4 text-[clamp(1.125rem,0.3em,1.5rem)] tracking-[0.2em] text-ink-soft">
 			さく<span class="text-accent">ラシ</span>
 		</p>
 	</MoonHeading>
 
-	<figure class="relative mt-14 w-fit [@media(max-height:700px)]:mt-8">
-		<span lang="ja" class="pointer-events-none absolute top-20 -right-10 -z-10 text-[10rem] leading-none text-watermark select-none sm:-top-20 sm:right-auto sm:left-[62%] sm:text-[17rem]" aria-hidden="true">桜</span>
+	<figure class="mt-14 [@media(max-height:800px)]:mt-10 [@media(max-height:700px)]:mt-8">
 		<blockquote class="verse">
 			petals on the wind<br />
 			a small page waits for its words<br />
