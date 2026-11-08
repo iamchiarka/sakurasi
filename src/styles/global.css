@@ -22,11 +22,11 @@
 	unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+2000-206F, U+20AC, U+2122, U+2212, U+FEFF, U+FFFD;
 }
 
-/* Subset containing only 桜; add glyphs by re-downloading with Google Fonts' text= parameter. */
+/* Subset containing only 桜さくラシ; add glyphs by re-downloading with Google Fonts' text= parameter. */
 @font-face {
 	font-family: "Shippori Mincho";
 	font-weight: 400;
 	font-display: swap;
-	src: url("/fonts/shippori-mincho-sakura.woff2") format("woff2");
-	unicode-range: U+685C;
+	src: url("/fonts/shippori-mincho-ja.woff2") format("woff2");
+	unicode-range: U+304F, U+3055, U+30B7, U+30E9, U+685C;
 }
