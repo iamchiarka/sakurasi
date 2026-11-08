@@ -1,0 +1,122 @@
+---
+interface Props {
+	class?: string;
+}
+
+const { class: className = 'text-[clamp(2.25rem,9vw,4rem)]' } = Astro.props;
+
+const blossoms: [number, number, number][] = [
+	[246, 22, 1],
+	[268, 64, 0.8],
+	[198, 140, 1],
+	[176, 99, 0.7],
+	[104, 80, 0.9],
+	[44, 122, 0.8],
+	[30, 172, 1],
+	[326, 30, 0.75],
+];
+const buds: [number, number][] = [
+	[226, 30],
+	[214, 118],
+	[122, 118],
+	[66, 156],
+	[290, 44],
+];
+---
+
+<div class:list={['moon-heading relative mt-[1.85em] w-fit', className]}>
+	<div class="moon" aria-hidden="true"></div>
+	<svg class="branch" viewBox="0 0 400 200" overflow="visible" aria-hidden="true">
+		<defs>
+			<g id="blossom">
+				{[0, 72, 144, 216, 288].map((a) => <ellipse cx="0" cy="-5" rx="3.6" ry="5.2" transform={`rotate(${a})`} />)}
+			</g>
+			<!-- The moon's disc in this viewBox: 1em = 125 units, from the .moon/.branch offsets below. -->
+			<clipPath id="moon-disc">
+				<circle cx="200" cy="94" r="100" />
+			</clipPath>
+		</defs>
+		<g fill="none" stroke="var(--branch)" stroke-linecap="round">
+			<path d="M4000 -160C1800 -90 700 -42 400 18" stroke-width="7" />
+			<path d="M400 18C340 30 300 52 258 70" stroke-width="7" />
+			<path d="M258 70C215 88 170 96 120 120" stroke-width="4.5" />
+			<path d="M120 120C90 135 62 150 30 172" stroke-width="2.5" />
+			<path d="M300 50C285 35 268 26 246 22" stroke-width="2.5" />
+			<path d="M210 86C200 105 196 122 198 140" stroke-width="2" />
+			<path d="M150 104C138 90 122 82 104 80" stroke-width="1.8" />
+			<path d="M80 141C70 128 58 122 44 122" stroke-width="1.4" />
+			<path d="M340 31C334 24 330 28 326 30" stroke-width="2" />
+		</g>
+		<g fill="var(--blossom)">
+			{blossoms.map(([x, y, s]) => <use href="#blossom" transform={`translate(${x} ${y}) scale(${s * 1.4})`} />)}
+		</g>
+		<g class="backlit" clip-path="url(#moon-disc)">
+			{blossoms.map(([x, y, s]) => <use href="#blossom" transform={`translate(${x} ${y}) scale(${s * 1.4})`} />)}
+		</g>
+		<g fill="var(--branch)">
+			{blossoms.map(([x, y, s]) => <circle cx={x} cy={y} r={1.6 * s} />)}
+			{buds.map(([x, y]) => <circle cx={x} cy={y} r="2.6" />)}
+		</g>
+	</svg>
+	<slot />
+</div>
+
+<style>
+	.moon-heading :global(h1) {
+		font-size: 1em;
+		line-height: 1;
+		font-weight: 700;
+	}
+
+	.moon,
+	.moon::before {
+		pointer-events: none;
+	}
+
+	.moon {
+		position: absolute;
+		z-index: -1;
+		right: -0.35em;
+		top: -1.75em;
+		width: 1.6em;
+		aspect-ratio: 1;
+		border-radius: 50%;
+		/* Faint maria so the disc reads as a moon, never as a flag. */
+		background:
+			radial-gradient(circle at 34% 40%, color-mix(in srgb, var(--moon-edge) 32%, transparent) 0 6%, transparent 15%),
+			radial-gradient(circle at 58% 62%, color-mix(in srgb, var(--moon-edge) 26%, transparent) 0 9%, transparent 19%),
+			radial-gradient(circle at 63% 31%, color-mix(in srgb, var(--moon-edge) 20%, transparent) 0 3%, transparent 10%),
+			radial-gradient(circle at 36% 34%, var(--moon), var(--moon) 45%, var(--moon-edge) 100%);
+		box-shadow: -0.04em 0.05em 0.25em var(--moon-glow);
+	}
+
+	.moon::before {
+		content: '';
+		position: absolute;
+		inset: -6em;
+		z-index: -1;
+		border-radius: 50%;
+		background: radial-gradient(
+			closest-side,
+			var(--moon-glow),
+			color-mix(in srgb, var(--moon-glow) 60%, transparent) 30%,
+			color-mix(in srgb, var(--moon-glow) 25%, transparent) 60%,
+			color-mix(in srgb, var(--moon-glow) 8%, transparent) 82%,
+			transparent
+		);
+	}
+
+	.branch {
+		position: absolute;
+		z-index: -1;
+		right: -1.15em;
+		top: -1.7em;
+		width: 3.2em;
+		pointer-events: none;
+	}
+
+	/* Only blossoms in front of the disc are backlit; the rest stay lit pink. */
+	.backlit {
+		fill: color-mix(in srgb, var(--blossom) 45%, var(--branch));
+	}
+</style>

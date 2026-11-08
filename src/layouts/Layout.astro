@@ -6,23 +6,47 @@ interface Props {
 	description?: string;
 }
 
-const { title, description = 'sakurasi.de' } = Astro.props;
+const { title, description = 'SAKURASI · さくラシ' } = Astro.props;
 
 const nav = [
 	{ href: '/', label: 'home' },
 	{ href: '/about', label: 'about' },
 ];
+const path = Astro.url.pathname.replace(/\/$/, '') || '/';
 
-const petals = Array.from({ length: 22 }, (_, i) => ({
-	left: (i * 137) % 100,
-	size: 6 + ((i * 7) % 10),
-	fall: 9 + (i % 6) * 2,
-	sway: 2 + (i % 3),
-	delay: (i * 1.3) % 14,
-}));
+// Deterministic pseudo-random so every build renders the same scene.
+const rand = (i: number, k: number) => {
+	const x = Math.sin(i * 12.9898 + k * 78.233) * 43758.5453;
+	return x - Math.floor(x);
+};
+const lerp = (a: number, b: number, t: number) => a + (b - a) * t;
+
+const tier = (count: number, size: [number, number], dur: [number, number], seed: number) =>
+	Array.from({ length: count }, (_, n) => {
+		const i = n + seed;
+		const d = lerp(dur[0], dur[1], rand(i, 2));
+		return [
+			`--x:${(rand(i, 1) * 104 - 2).toFixed(1)}%`,
+			`--size:${lerp(size[0], size[1], rand(i, 3)).toFixed(1)}px`,
+			`--dur:${d.toFixed(1)}s`,
+			`--delay:-${(rand(i, 4) * d).toFixed(1)}s`,
+			`--drift:${(rand(i, 5) * 24 - 8).toFixed(1)}vw`,
+			`--spin:${lerp(2.5, 6, rand(i, 6)).toFixed(1)}s`,
+			`--tilt:${Math.round(rand(i, 7) * 30 - 15)}deg`,
+			`--rz:${Math.round(rand(i, 9) * 360)}deg`,
+			`--rest:${Math.round(lerp(8, 92, rand(i, 8)))}vh`,
+		].join(';');
+	});
+
+const far = tier(16, [6, 8], [24, 34], 0);
+const mid = tier(12, [9, 12], [14, 19], 100);
+const near = tier(4, [16, 21], [8, 11], 200);
+const macro = tier(2, [56, 80], [14, 18], 300);
+
+const canonical = new URL(Astro.url.pathname, Astro.site);
 ---
 
-<html lang="en">
+<html lang="en" class="dark">
 	<head>
 		<script is:inline>
 			const theme = localStorage.getItem('theme') ?? 'dark';
@@ -31,108 +55,219 @@ const petals = Array.from({ length: 22 }, (_, i) => ({
 		<meta charset="utf-8" />
 		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
 		<link rel="preload" href="/fonts/shippori-mincho-latin-700.woff2" as="font" type="font/woff2" crossorigin />
+		<link rel="preload" href="/fonts/shippori-mincho-latin-400.woff2" as="font" type="font/woff2" crossorigin />
 		<meta name="viewport" content="width=device-width, initial-scale=1" />
 		<meta name="description" content={description} />
+		<link rel="canonical" href={canonical} />
+		<meta property="og:type" content="website" />
+		<meta property="og:url" content={canonical} />
+		<meta property="og:title" content={title} />
+		<meta property="og:description" content={description} />
 		<meta name="generator" content={Astro.generator} />
-		<title>{title} · sakurasi.de</title>
+		<title>{title}</title>
 	</head>
-	<body class="min-h-screen bg-rose-50 text-rose-950 antialiased transition-colors duration-500 dark:bg-stone-950 dark:text-rose-50">
+	<body class="sky min-h-screen font-serif text-ink antialiased">
 		<div class="relative isolate flex min-h-screen flex-col overflow-hidden">
 			<div class="pointer-events-none absolute inset-0 -z-10" aria-hidden="true">
-				<div class="moon absolute top-36 right-[8%] size-16 rounded-full bg-rose-200 sm:top-28 sm:size-24 dark:bg-rose-300/90"></div>
-				<div class="absolute -right-8 -bottom-20 font-serif text-[16rem] leading-none text-rose-600/[0.07] select-none sm:text-[24rem] dark:text-rose-400/[0.07]">桜</div>
-				{petals.map((p) => (
-					<span class="petal-fall" style={`left:${p.left}%;animation-duration:${p.fall}s;animation-delay:-${p.delay}s`}>
-						<span class="petal" style={`width:${p.size}px;height:${p.size}px;animation-duration:${p.sway}s`} />
-					</span>
-				))}
+				{far.map((style) => <span class="petal far" style={style} />)}
+				{mid.map((style) => <span class="petal mid" style={style} />)}
 			</div>
 
-			<header class="mx-auto flex w-full max-w-3xl items-center justify-between px-6 py-8">
-				<a href="/" class="font-serif text-sm tracking-[0.2em] text-rose-800 dark:text-rose-200">桜 sakurasi</a>
-				<div class="flex items-center gap-5">
-					<nav class="flex gap-5 text-sm text-stone-500 dark:text-stone-400">
+			<svg class="distant pointer-events-none absolute inset-x-0 bottom-0 h-[24vh] w-full" viewBox="0 0 1200 200" preserveAspectRatio="none" aria-hidden="true">
+				<path d="M0 200V128C140 98 250 116 380 100C520 84 610 124 760 110C900 97 1010 74 1200 104V200Z" />
+				<ellipse cx="905" cy="74" rx="52" ry="34" />
+				<ellipse cx="862" cy="88" rx="38" ry="24" />
+				<ellipse cx="948" cy="90" rx="36" ry="22" />
+				<rect x="899" y="90" width="9" height="30" />
+			</svg>
+			<div class="mist pointer-events-none absolute inset-x-0 bottom-0 h-[40vh]" aria-hidden="true"></div>
+			<svg class="foreground pointer-events-none absolute -bottom-10 -left-16 w-[clamp(9rem,24vw,22rem)]" viewBox="0 0 600 400" aria-hidden="true">
+				<g fill="none" stroke="var(--branch-lit)" stroke-linecap="round" transform="translate(4 -4)">
+					<path d="M-20 420C60 360 130 310 210 270" stroke-width="30" />
+					<path d="M210 270C300 225 390 190 520 150" stroke-width="18" />
+					<path d="M520 150C550 140 575 128 600 110" stroke-width="9" />
+					<path d="M300 228C320 190 330 160 352 128" stroke-width="10" />
+				</g>
+				<g fill="none" stroke="var(--branch)" stroke-linecap="round">
+					<path d="M-20 420C60 360 130 310 210 270" stroke-width="30" />
+					<path d="M210 270C300 225 390 190 520 150" stroke-width="18" />
+					<path d="M520 150C550 140 575 128 600 110" stroke-width="9" />
+					<path d="M300 228C320 190 330 160 352 128" stroke-width="10" />
+					<path d="M420 178C440 200 470 212 505 214" stroke-width="7" />
+					<path d="M140 312C150 280 170 255 196 236" stroke-width="12" />
+				</g>
+				<g fill="var(--branch)">
+					<circle cx="352" cy="124" r="14" />
+					<circle cx="508" cy="214" r="11" />
+					<circle cx="198" cy="232" r="12" />
+					<circle cx="600" cy="108" r="9" />
+				</g>
+			</svg>
+
+			<header class="relative z-20 mx-auto flex w-full max-w-3xl items-center justify-between px-6 py-8">
+				<a href="/" class="-m-3 p-3 text-xl leading-none text-accent-soft">
+					<span lang="ja">桜</span><span class="sr-only">sakurasi, home</span>
+				</a>
+				<div class="flex items-center gap-3 sm:gap-5">
+					<nav aria-label="Main" class="flex gap-1 text-[15px] text-muted sm:gap-3">
 						{nav.map((item) => (
-							<a href={item.href} class="transition hover:text-rose-700 dark:hover:text-rose-300">{item.label}</a>
+							<a
+								href={item.href}
+								aria-current={path === item.href ? 'page' : undefined}
+								class="-my-3 px-2 py-3 transition-[color] duration-150 hover:text-ink aria-[current=page]:text-ink aria-[current=page]:underline aria-[current=page]:decoration-accent aria-[current=page]:underline-offset-[6px]"
+							>
+								{item.label}
+							</a>
 						))}
 					</nav>
 					<button
 						id="theme-toggle"
 						type="button"
-						aria-label="Toggle dark mode"
-						class="rounded-full p-1.5 text-stone-500 transition hover:bg-rose-100 hover:text-rose-700 dark:text-stone-400 dark:hover:bg-stone-800 dark:hover:text-rose-300"
+						aria-label="Dark mode"
+						aria-pressed="true"
+						class="-m-3 rounded-full p-[13px] text-muted transition-[color] duration-150 hover:text-ink"
 					>
-						<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="hidden size-4 dark:block">
-							<circle cx="12" cy="12" r="4" />
-							<path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41" />
-						</svg>
-						<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="size-4 dark:hidden">
-							<path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79Z" />
+						<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round" class="size-[18px] dark:fill-current" aria-hidden="true">
+							<path d="M20.5 14.2A8.5 8.5 0 0 1 9.8 3.5a8.5 8.5 0 1 0 10.7 10.7Z" />
 						</svg>
 					</button>
 				</div>
 			</header>
 
-			<main class="mx-auto flex w-full max-w-3xl flex-1 flex-col justify-center px-6 py-12">
+			<main class="relative z-10 mx-auto flex w-full max-w-3xl flex-1 flex-col justify-center px-6 pt-10 pb-16 [@media(max-height:700px)]:pt-2 [@media(max-height:700px)]:pb-8">
 				<slot />
 			</main>
 
-			<footer class="mx-auto flex w-full max-w-3xl justify-between border-t border-rose-950/10 px-6 py-5 text-xs text-stone-400 dark:border-rose-50/10 dark:text-stone-600">
-				<span>sakurasi.de</span>
-				<span>© {new Date().getFullYear()}</span>
+			<footer class="relative z-10 mx-auto w-full max-w-3xl px-6 py-6 text-center text-sm tracking-[0.08em] text-muted">
+				under the same moon
 			</footer>
+
+			<div class="pointer-events-none absolute inset-0 z-[25]" aria-hidden="true">
+				{near.map((style) => <span class="petal near" style={style} />)}
+				{macro.map((style) => <span class="petal near macro" style={style} />)}
+			</div>
+			<div class="grain pointer-events-none fixed inset-0 z-30" aria-hidden="true"></div>
 		</div>
 
 		<script is:inline>
-			document.getElementById('theme-toggle').addEventListener('click', () => {
+			const toggle = document.getElementById('theme-toggle');
+			const sync = () => toggle.setAttribute('aria-pressed', String(document.documentElement.classList.contains('dark')));
+			sync();
+			toggle.addEventListener('click', () => {
 				const isDark = document.documentElement.classList.toggle('dark');
 				localStorage.setItem('theme', isDark ? 'dark' : 'light');
+				sync();
 			});
 		</script>
 	</body>
 </html>
 
 <style>
-	.moon {
-		box-shadow:
-			0 0 0 18px rgb(251 113 133 / 0.08),
-			0 0 0 44px rgb(251 113 133 / 0.05);
+	.sky {
+		background: linear-gradient(to bottom, var(--sky-top), var(--bg) 50%, var(--sky-low)) fixed;
 	}
 
-	.petal-fall {
-		position: absolute;
-		top: 0;
-		animation: fall linear infinite;
+	.distant {
+		fill: var(--distant);
+		filter: blur(2px);
+	}
+
+	/* Many stops: two-stop gradients band visibly on large dark screens. */
+	.mist {
+		background: linear-gradient(
+			to bottom,
+			transparent,
+			color-mix(in srgb, var(--bg-deep) 20%, transparent) 25%,
+			color-mix(in srgb, var(--bg-deep) 50%, transparent) 50%,
+			color-mix(in srgb, var(--bg-deep) 75%, transparent) 75%,
+			color-mix(in srgb, var(--bg-deep) 88%, transparent)
+		);
+	}
+
+	.foreground {
+		filter: blur(5px);
+		opacity: 0.9;
+	}
+
+	.grain {
+		opacity: var(--grain-opacity);
+		mix-blend-mode: overlay;
+		background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
 	}
 
 	.petal {
-		display: block;
-		background: #fda4af;
-		border-radius: 0 70% 0 70%;
-		opacity: 0.75;
-		animation: sway ease-in-out infinite alternate;
+		position: absolute;
+		top: 0;
+		left: var(--x);
+		width: var(--size);
+		height: calc(var(--size) * 1.2);
+		border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
+		background: radial-gradient(circle at 70% 25%, var(--petal-lit), var(--petal) 70%);
+		/* Notch at the tip, the one shape detail that reads as sakura rather than leaf. */
+		mask: radial-gradient(circle at 50% -4%, transparent 22%, #000 23%);
+		translate: 0 -12vh;
+		transform: rotate(var(--rz));
+		animation:
+			fall var(--dur) linear var(--delay) infinite,
+			flip var(--spin) ease-in-out var(--delay) infinite alternate;
+	}
+
+	.far {
+		opacity: 0.55;
+	}
+
+	.mid {
+		opacity: 0.8;
+	}
+
+	.near {
+		opacity: 0.85;
+		filter: blur(2px);
+	}
+
+	/* Out of focus this close, so the notch would read as a bite, not a petal. */
+	.macro {
+		opacity: 0.35;
+		filter: blur(12px);
+		mask: none;
 	}
 
 	@keyframes fall {
-		from {
-			transform: translateY(-20px);
+		0% {
+			translate: 0 -12vh;
 		}
-		to {
-			transform: translateY(110vh);
+		25% {
+			translate: calc(var(--drift) * 0.25 + 1.5vw) 22vh;
+		}
+		50% {
+			translate: calc(var(--drift) * 0.5) 50vh;
+		}
+		75% {
+			translate: calc(var(--drift) * 0.7 - 1.5vw) 80vh;
+		}
+		100% {
+			translate: var(--drift) 112vh;
 		}
 	}
 
-	@keyframes sway {
+	/* Capped at ±60° so a petal never turns fully edge-on and reads as a rain streak. */
+	@keyframes flip {
 		from {
-			transform: translateX(-14px) rotate(0deg);
+			rotate: 0.4 1 0.2 calc(var(--tilt) - 60deg);
 		}
 		to {
-			transform: translateX(14px) rotate(220deg);
+			rotate: 0.4 1 0.2 calc(var(--tilt) + 60deg);
 		}
 	}
 
 	@media (prefers-reduced-motion: reduce) {
-		.petal-fall {
+		.petal {
+			animation: none;
+			translate: 0 var(--rest);
+			rotate: 0.4 1 0.2 calc(var(--tilt) + 45deg);
+		}
+
+		.near {
 			display: none;
 		}
 	}

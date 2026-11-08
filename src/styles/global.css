@@ -2,8 +2,102 @@
 
 @custom-variant dark (&:where(.dark, .dark *));
 
-@theme {
+:root {
+	--sky-top: #d2c2de;
+	--bg: #ecd3dc;
+	--sky-low: #f5c8b4;
+	--bg-deep: #f2c4b5;
+	--ink: #4c0519;
+	--ink-soft: #44403c;
+	--muted: #3d3834;
+	--accent: #9f1239;
+	--accent-soft: #881337;
+	--line: rgb(76 5 25 / 0.15);
+	--moon: #fff6ee;
+	--moon-edge: #f6dccb;
+	--moon-glow: rgb(255 236 220 / 0.5);
+	--rim: transparent;
+	--petal-lit: #fecdd3;
+	--petal: #fb7185;
+	--branch: rgb(74 28 64 / 0.82);
+	--branch-lit: rgb(255 236 220 / 0.45);
+	--blossom: #f4a7bd;
+	--distant: rgb(110 70 120 / 0.2);
+	--watermark: rgb(110 40 90 / 0.06);
+	--grain-opacity: 0.05;
+}
+
+.dark {
+	--sky-top: #09070a;
+	--bg: #0c0a0d;
+	--sky-low: #140b11;
+	--bg-deep: #1a0d14;
+	--ink: #fff1f2;
+	--ink-soft: #d6d3d1;
+	--muted: #a8a29e;
+	--accent: #fb7185;
+	--accent-soft: #fda4af;
+	--line: rgb(255 241 242 / 0.1);
+	--moon: #fdf0f2;
+	--moon-edge: #e8c4cc;
+	--moon-glow: rgb(253 164 175 / 0.14);
+	--rim: rgb(253 164 175 / 0.22);
+	--petal-lit: #ffe4e6;
+	--petal: #fda4af;
+	--branch: #050304;
+	--branch-lit: rgb(232 196 204 / 0.22);
+	--blossom: #f3c6d3;
+	--distant: rgb(58 32 46 / 0.55);
+	--watermark: rgb(251 113 133 / 0.05);
+	--grain-opacity: 0.06;
+}
+
+@theme inline {
 	--font-serif: "Shippori Mincho", ui-serif, serif;
+	--color-ink: var(--ink);
+	--color-ink-soft: var(--ink-soft);
+	--color-muted: var(--muted);
+	--color-accent: var(--accent);
+	--color-accent-soft: var(--accent-soft);
+	--color-line: var(--line);
+	--color-watermark: var(--watermark);
+}
+
+@utility verse {
+	font-size: 1.125rem;
+	line-height: 2;
+	color: var(--ink-soft);
+}
+
+@layer base {
+	html {
+		background: var(--bg);
+		color-scheme: light;
+		scrollbar-color: var(--accent) transparent;
+	}
+
+	html.dark {
+		color-scheme: dark;
+	}
+
+	::selection {
+		background: color-mix(in srgb, var(--accent) 35%, transparent);
+		color: var(--ink);
+	}
+
+	:focus-visible {
+		outline: 2px solid var(--accent);
+		outline-offset: 4px;
+		border-radius: 2px;
+	}
+
+	@media (prefers-reduced-motion: no-preference) {
+		body {
+			transition:
+				background-color 300ms ease-out,
+				color 300ms ease-out;
+		}
+	}
 }
 
 @font-face {
